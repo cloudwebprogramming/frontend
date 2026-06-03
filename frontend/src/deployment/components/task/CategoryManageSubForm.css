@@ -1,0 +1,112 @@
+.tf-sub-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1010;
+  animation: tfSubFadeIn 0.25s ease-out;
+}
+
+.tf-sub-container {
+  background: rgba(30, 30, 45, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  border-radius: 14px;
+  width: 85%;
+  max-width: 320px;
+  padding: 20px;
+  color: #e5e7eb;
+}
+
+.tf-sub-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.tf-sub-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0;
+  color: #f3f4f6;
+}
+
+.tf-sub-close {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.tf-sub-close:hover {
+  color: #ef4444;
+}
+
+.tf-sub-add-form {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.tf-sub-list-container {
+  max-height: 140px;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  background: rgba(10, 10, 15, 0.3);
+}
+
+.tf-sub-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tf-sub-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.85rem;
+}
+
+.tf-sub-item:last-child {
+  border-bottom: none;
+}
+
+.tf-sub-del-btn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.tf-sub-del-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+@keyframes tfSubFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}

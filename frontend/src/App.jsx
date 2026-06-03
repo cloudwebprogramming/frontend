@@ -3,12 +3,16 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
+import TaskRegistrationDashboard from './deployment/components/task/TaskRegistrationDashboard'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
+      {/* 역할 4: 할일 등록 및 API 연동 대시보드 (격리 완료) */}
+      <TaskRegistrationDashboard />
+
       <section id="center">
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
