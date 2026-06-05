@@ -79,6 +79,47 @@ export async function createTask(projectId, taskData) {
 }
 
 /**
+ * 할 일 담당자 수정 API
+ * @param {number|string} taskId 할 일 ID
+ * @param {string} assignee 변경할 담당자 이름
+ */
+export async function updateTaskAssignee(taskId, assignee) {
+  if (USE_MOCK) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          status: 200,
+          data: {
+            taskId: Number(taskId),
+            assignee: assignee || null,
+            status: "success"
+          }
+        });
+      }, 300);
+    });
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/tasks/${taskId}/assignee`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ assignee }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || '담당자 수정 중 서버 에러가 발생했습니다.');
+  }
+
+  const data = await response.json();
+  return {
+    status: 200,
+    data: data,
+  };
+}
+
+/**
  * 프로젝트 목록 조회 API
  */
 export async function getProjects() {

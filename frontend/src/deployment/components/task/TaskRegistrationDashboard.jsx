@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import TaskFormModal from './TaskFormModal';
 import ApiTesterPanel from './ApiTesterPanel';
+import ProjectTaskManagement from './ProjectTaskManagement';
 import './TaskRegistrationDashboard.css';
 
 export default function TaskRegistrationDashboard() {
@@ -48,6 +49,9 @@ export default function TaskRegistrationDashboard() {
           </div>
         )}
       </section>
+
+      {/* 신규 기능: 프로젝트별 담당자 관리 및 필터링 섹션 */}
+      <ProjectTaskManagement />
 
       {/* API 실시간 연동 테스트 보드 */}
       <ApiTesterPanel />
