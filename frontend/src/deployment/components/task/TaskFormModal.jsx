@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { createTask, getProjects, getProjectMembers } from '../../api/taskApi';
 import CategoryManageSubForm from './CategoryManageSubForm';
 import './TaskFormModal.css';
@@ -190,7 +191,7 @@ export default function TaskFormModal(props) {
     });
   };
 
-  return (
+  return createPortal(
     <div className="tf-modal-overlay" onClick={onClose}>
       <div className="tf-modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="tf-modal-header">
@@ -362,6 +363,7 @@ export default function TaskFormModal(props) {
           onDeleteCategory={handleDeleteCategory}
         />
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

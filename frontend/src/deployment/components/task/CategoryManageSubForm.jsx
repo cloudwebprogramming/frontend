@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import './CategoryManageSubForm.css';
 
 export default function CategoryManageSubForm(props) {
@@ -30,7 +31,7 @@ export default function CategoryManageSubForm(props) {
     setError('');
   };
 
-  return (
+  return createPortal(
     <div className="tf-sub-overlay" onClick={onClose}>
       <div className="tf-sub-container" onClick={(e) => e.stopPropagation()}>
         <div className="tf-sub-header">
@@ -74,6 +75,7 @@ export default function CategoryManageSubForm(props) {
           </ul>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

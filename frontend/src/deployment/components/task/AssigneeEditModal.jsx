@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import './AssigneeEditModal.css';
 
 export default function AssigneeEditModal({ isOpen, onClose, task, members, onUpdate }) {
@@ -18,7 +19,7 @@ export default function AssigneeEditModal({ isOpen, onClose, task, members, onUp
     onClose();
   };
 
-  return (
+  return createPortal(
     <div className="aem-overlay" onClick={onClose}>
       <div className="aem-container" onClick={(e) => e.stopPropagation()}>
         <div className="aem-header">
@@ -54,6 +55,7 @@ export default function AssigneeEditModal({ isOpen, onClose, task, members, onUp
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
