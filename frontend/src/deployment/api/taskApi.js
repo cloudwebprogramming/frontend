@@ -261,3 +261,88 @@ export async function getUrgentTasks() {
   return { status: 200, data };
 }
 
+/**
+ * 프로젝트 생성 API
+ */
+export async function createProject(projectData) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(projectData),
+  });
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(err || '프로젝트 생성 실패');
+  }
+  const data = await response.json();
+  return { status: response.status, data };
+}
+
+/**
+ * 멤버 초대 API
+ */
+export async function addProjectMember(projectId, memberData) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/members`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(memberData),
+  });
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(err || '멤버 초대 실패');
+  }
+  const data = await response.json();
+  return { status: response.status, data };
+}
+
+/**
+ * 멤버 초대 수락 API
+ */
+export async function acceptProjectMember(projectId, username) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/members/${username}/accept`, {
+    method: 'PUT'
+  });
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(err || '멤버 초대 수락 실패');
+  }
+  const data = await response.json();
+  return { status: response.status, data };
+}
+
+/**
+ * 회원 가입 API
+ */
+export async function createUser(userData) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/users`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(userData),
+  });
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(err || '회원 가입 실패');
+  }
+  const data = await response.json();
+  return { status: response.status, data };
+}
+
+/**
+ * 전체 회원 조회 API
+ */
+export async function getUsers() {
+  const response = await fetch(`${API_BASE_URL}/api/v1/users`, {
+    method: 'GET'
+  });
+  if (!response.ok) {
+    throw new Error('회원 목록 조회 실패');
+  }
+  const data = await response.json();
+  return { status: response.status, data };
+}

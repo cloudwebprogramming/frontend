@@ -5,11 +5,11 @@ import './TaskFormModal.css';
 
 export default function TaskFormModal(props) {
   // 예외 방지 및 유연성을 위한 구조분해 기본값 할당
-  const { 
-    isOpen = false, 
-    onClose = () => {}, 
-    initialProjectId = 1, 
-    onTaskCreated = () => {} 
+  const {
+    isOpen = false,
+    onClose = () => { },
+    initialProjectId = 1,
+    onTaskCreated = () => { }
   } = props;
 
   // 프로젝트 및 멤버 정보 동적 연동 상태
@@ -194,7 +194,7 @@ export default function TaskFormModal(props) {
     <div className="tf-modal-overlay" onClick={onClose}>
       <div className="tf-modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="tf-modal-header">
-          <h2 className="tf-modal-title">새 할 일 등록 (2라운드)</h2>
+          <h2 className="tf-modal-title">새 할 일 등록</h2>
           <button type="button" className="tf-close-btn" onClick={onClose}>&times;</button>
         </div>
 
@@ -208,11 +208,15 @@ export default function TaskFormModal(props) {
               value={selectedProjectId}
               onChange={handleProjectChange}
             >
-              {projects.map((p) => (
-                <option key={p.id} value={p.id}>
-                  [{p.subject}] {p.title}
-                </option>
-              ))}
+              {projects.length === 0 ? (
+                <option value="">(프로젝트가 없습니다. 먼저 생성해주세요)</option>
+              ) : (
+                projects.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    [{p.subject}] {p.title}
+                  </option>
+                ))
+              )}
             </select>
             {errors.project && <span className="tf-error-msg">{errors.project}</span>}
           </div>
@@ -350,7 +354,7 @@ export default function TaskFormModal(props) {
         </form>
 
         {/* 카테고리 관리 동적 서브 팝업 */}
-        <CategoryManageSubForm 
+        <CategoryManageSubForm
           isOpen={isCatModalOpen}
           categories={categories}
           onClose={() => setIsCatModalOpen(false)}

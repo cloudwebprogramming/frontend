@@ -15,16 +15,14 @@ export default function TaskRegistrationDashboard() {
   return (
     <div className="trd-dashboard-container">
       <header className="trd-dashboard-header">
-        <h2 className="trd-dashboard-title">역할 4: 할일 등록 및 API 연동 대시보드</h2>
-        <p className="trd-dashboard-desc">독립 격리 환경 테스트 패널 (2라운드 고도화 완료)</p>
+        <h2 className="trd-dashboard-title">할일 등록 대시보드</h2>
       </header>
 
       <section className="trd-trigger-section">
         <div className="trd-trigger-card">
-          <h3 className="trd-card-title">할 일 등록 UI 테스트</h3>
-          <p className="trd-card-desc">반응형 Glassmorphism 모달과 동적 카테고리 관리 서브 모달을 호출합니다.</p>
-          <button 
-            type="button" 
+          <h3 className="trd-card-title">할 일 등록</h3>
+          <button
+            type="button"
             className="trd-btn-primary"
             onClick={() => setIsModalOpen(true)}
           >
@@ -57,7 +55,7 @@ export default function TaskRegistrationDashboard() {
       <ApiTesterPanel />
 
       {/* 할 일 등록 모달 */}
-      <TaskFormModal 
+      <TaskFormModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         initialProjectId={1}

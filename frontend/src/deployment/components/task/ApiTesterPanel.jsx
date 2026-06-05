@@ -5,7 +5,12 @@ import {
   createTask, 
   getTasksFiltered, 
   getProjectProgress, 
-  getUrgentTasks 
+  getUrgentTasks,
+  createProject,
+  addProjectMember,
+  acceptProjectMember,
+  createUser,
+  getUsers
 } from '../../api/taskApi';
 import './ApiTesterPanel.css';
 
@@ -42,6 +47,30 @@ export default function ApiTesterPanel() {
     sortOrder: 'asc'
   });
 
+  // 회원가입 폼 데이터
+  const [postUserForm, setPostUserForm] = useState({
+    username: 'hong',
+    name: '홍길동',
+    email: 'hong@example.com'
+  });
+
+  // 프로젝트 생성 폼 데이터
+  const [postProjectForm, setPostProjectForm] = useState({
+    title: '새로운 테스트 프로젝트',
+    subject: '테스트 과목',
+    description: '설명',
+    inviteCode: 'TEST-123',
+    creatorUsername: 'hong'
+  });
+
+  // 멤버 초대 폼 데이터
+  const [postMemberForm, setPostMemberForm] = useState({
+    username: 'kim',
+    inviteCode: 'TEST-123'
+  });
+
+  const [acceptUsername, setAcceptUsername] = useState('kim');
+
   // 탭 변경 시 응답 창 초기화
   useEffect(() => {
     setResponseState({ status: null, body: null, isError: false });
@@ -55,8 +84,26 @@ export default function ApiTesterPanel() {
     try {
       let res;
       switch (activeTab) {
+        case 'POST_USER':
+          res = await createUser(postUserForm);
+          break;
+        case 'GET_USERS':
+          res = await getUsers();
+          break;
+        case 'POST_PROJECT':
+          res = await createProject(postProjectForm);
+          break;
         case 'GET_PROJECTS':
           res = await getProjects();
+          break;
+        case 'POST_MEMBER':
+          if (!projectId.trim()) throw new Error('프로젝트 ID를 입력해주세요.');
+          res = await addProjectMember(projectId.trim(), postMemberForm);
+          break;
+        case 'PUT_MEMBER_ACCEPT':
+          if (!projectId.trim()) throw new Error('프로젝트 ID를 입력해주세요.');
+          if (!acceptUsername.trim()) throw new Error('수락할 유저네임을 입력해주세요.');
+          res = await acceptProjectMember(projectId.trim(), acceptUsername.trim());
           break;
         case 'GET_MEMBERS':
           if (!projectId.trim()) throw new Error('프로젝트 ID를 입력해주세요.');
@@ -111,8 +158,18 @@ export default function ApiTesterPanel() {
   const getEndpointInfo = () => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
     switch (activeTab) {
+      case 'POST_USER':
+        return { method: 'POST', url: `${baseUrl}/api/v1/users` };
+      case 'GET_USERS':
+        return { method: 'GET', url: `${baseUrl}/api/v1/users` };
+      case 'POST_PROJECT':
+        return { method: 'POST', url: `${baseUrl}/api/v1/projects` };
       case 'GET_PROJECTS':
         return { method: 'GET', url: `${baseUrl}/api/v1/projects` };
+      case 'POST_MEMBER':
+        return { method: 'POST', url: `${baseUrl}/api/v1/projects/${projectId || '{projectId}'}/members` };
+      case 'PUT_MEMBER_ACCEPT':
+        return { method: 'PUT', url: `${baseUrl}/api/v1/projects/${projectId || '{projectId}'}/members/${acceptUsername || '{username}'}/accept` };
       case 'GET_MEMBERS':
         return { method: 'GET', url: `${baseUrl}/api/v1/projects/${projectId || '{projectId}'}/members` };
       case 'POST_TASK':
@@ -136,49 +193,46 @@ export default function ApiTesterPanel() {
   const ep = getEndpointInfo();
 
   return (
-    <div className="at-container">
+    <div className="at-container" style={{ marginTop: '30px' }}>
       <div className="at-header">
         <h2 className="at-title">API 실시간 연동 테스트 보드</h2>
-        <span className="at-badge">역할 4 / 2라운드</span>
+        <span className="at-badge">역할 4 / 2라운드 (회원+프로젝트 통합)</span>
       </div>
 
       {/* 탭 목록 */}
-      <div className="at-tabs">
-        <button 
-          className={`at-tab-btn ${activeTab === 'GET_PROJECTS' ? 'active' : ''}`}
-          onClick={() => setActiveTab('GET_PROJECTS')}
-        >
-          [GET] 전체 프로젝트 목록
+      <div className="at-tabs" style={{ flexWrap: 'wrap', gap: '5px' }}>
+        <button className={`at-tab-btn ${activeTab === 'POST_USER' ? 'active' : ''}`} onClick={() => setActiveTab('POST_USER')}>
+          [POST] 회원 가입
         </button>
-        <button 
-          className={`at-tab-btn ${activeTab === 'GET_MEMBERS' ? 'active' : ''}`}
-          onClick={() => setActiveTab('GET_MEMBERS')}
-        >
-          [GET] 프로젝트 소속 멤버
+        <button className={`at-tab-btn ${activeTab === 'GET_USERS' ? 'active' : ''}`} onClick={() => setActiveTab('GET_USERS')}>
+          [GET] 전체 회원
         </button>
-        <button 
-          className={`at-tab-btn ${activeTab === 'POST_TASK' ? 'active' : ''}`}
-          onClick={() => setActiveTab('POST_TASK')}
-        >
-          [POST] 새 할 일 생성
+        <button className={`at-tab-btn ${activeTab === 'POST_PROJECT' ? 'active' : ''}`} onClick={() => setActiveTab('POST_PROJECT')}>
+          [POST] 프로젝트 생성
         </button>
-        <button 
-          className={`at-tab-btn ${activeTab === 'GET_TASKS' ? 'active' : ''}`}
-          onClick={() => setActiveTab('GET_TASKS')}
-        >
-          [GET] 할 일 필터 및 정렬 조회
+        <button className={`at-tab-btn ${activeTab === 'GET_PROJECTS' ? 'active' : ''}`} onClick={() => setActiveTab('GET_PROJECTS')}>
+          [GET] 전체 프로젝트
         </button>
-        <button 
-          className={`at-tab-btn ${activeTab === 'GET_PROGRESS' ? 'active' : ''}`}
-          onClick={() => setActiveTab('GET_PROGRESS')}
-        >
-          [GET] 프로젝트 진행률
+        <button className={`at-tab-btn ${activeTab === 'POST_MEMBER' ? 'active' : ''}`} onClick={() => setActiveTab('POST_MEMBER')}>
+          [POST] 멤버 초대
         </button>
-        <button 
-          className={`at-tab-btn ${activeTab === 'GET_URGENT' ? 'active' : ''}`}
-          onClick={() => setActiveTab('GET_URGENT')}
-        >
-          [GET] 마감 임박 목록
+        <button className={`at-tab-btn ${activeTab === 'PUT_MEMBER_ACCEPT' ? 'active' : ''}`} onClick={() => setActiveTab('PUT_MEMBER_ACCEPT')}>
+          [PUT] 초대 수락
+        </button>
+        <button className={`at-tab-btn ${activeTab === 'GET_MEMBERS' ? 'active' : ''}`} onClick={() => setActiveTab('GET_MEMBERS')}>
+          [GET] 수락 멤버 조회
+        </button>
+        <button className={`at-tab-btn ${activeTab === 'POST_TASK' ? 'active' : ''}`} onClick={() => setActiveTab('POST_TASK')}>
+          [POST] 할 일 생성
+        </button>
+        <button className={`at-tab-btn ${activeTab === 'GET_TASKS' ? 'active' : ''}`} onClick={() => setActiveTab('GET_TASKS')}>
+          [GET] 할 일 조회
+        </button>
+        <button className={`at-tab-btn ${activeTab === 'GET_PROGRESS' ? 'active' : ''}`} onClick={() => setActiveTab('GET_PROGRESS')}>
+          [GET] 진행률
+        </button>
+        <button className={`at-tab-btn ${activeTab === 'GET_URGENT' ? 'active' : ''}`} onClick={() => setActiveTab('GET_URGENT')}>
+          [GET] 마감 임박
         </button>
       </div>
 
@@ -190,8 +244,8 @@ export default function ApiTesterPanel() {
             <span className="at-endpoint-url">{ep.url}</span>
           </div>
 
-          {/* 공통 프로젝트 ID 필드 노출 (특정 탭 제외) */}
-          {activeTab !== 'GET_PROJECTS' && activeTab !== 'GET_URGENT' && (
+          {/* 공통 프로젝트 ID 필드 노출 */}
+          {['POST_MEMBER', 'PUT_MEMBER_ACCEPT', 'GET_MEMBERS', 'POST_TASK', 'GET_TASKS', 'GET_PROGRESS'].includes(activeTab) && (
             <div className="at-form-group">
               <label className="at-label">프로젝트 ID (projectId)</label>
               <input 
@@ -201,6 +255,70 @@ export default function ApiTesterPanel() {
                 onChange={(e) => setProjectId(e.target.value)} 
                 placeholder="대상 프로젝트 ID 입력" 
               />
+            </div>
+          )}
+
+          {/* POST_USER 폼 */}
+          {activeTab === 'POST_USER' && (
+            <div>
+              <div className="at-form-group">
+                <label className="at-label">아이디 (Username)</label>
+                <input type="text" className="at-input" value={postUserForm.username} onChange={(e) => setPostUserForm({...postUserForm, username: e.target.value})} />
+              </div>
+              <div className="at-form-group">
+                <label className="at-label">이름 (Name)</label>
+                <input type="text" className="at-input" value={postUserForm.name} onChange={(e) => setPostUserForm({...postUserForm, name: e.target.value})} />
+              </div>
+              <div className="at-form-group">
+                <label className="at-label">이메일 (Email)</label>
+                <input type="text" className="at-input" value={postUserForm.email} onChange={(e) => setPostUserForm({...postUserForm, email: e.target.value})} />
+              </div>
+            </div>
+          )}
+
+          {/* POST_PROJECT 폼 */}
+          {activeTab === 'POST_PROJECT' && (
+            <div>
+              <div className="at-form-group">
+                <label className="at-label">프로젝트 제목</label>
+                <input type="text" className="at-input" value={postProjectForm.title} onChange={(e) => setPostProjectForm({...postProjectForm, title: e.target.value})} />
+              </div>
+              <div className="at-form-group">
+                <label className="at-label">과목</label>
+                <input type="text" className="at-input" value={postProjectForm.subject} onChange={(e) => setPostProjectForm({...postProjectForm, subject: e.target.value})} />
+              </div>
+              <div className="at-form-group">
+                <label className="at-label">초대 코드</label>
+                <input type="text" className="at-input" value={postProjectForm.inviteCode} onChange={(e) => setPostProjectForm({...postProjectForm, inviteCode: e.target.value})} />
+              </div>
+              <div className="at-form-group">
+                <label className="at-label">생성자 Username (자동 가입)</label>
+                <input type="text" className="at-input" value={postProjectForm.creatorUsername} onChange={(e) => setPostProjectForm({...postProjectForm, creatorUsername: e.target.value})} />
+              </div>
+            </div>
+          )}
+
+          {/* POST_MEMBER 폼 */}
+          {activeTab === 'POST_MEMBER' && (
+            <div>
+              <div className="at-form-group">
+                <label className="at-label">초대할 Username</label>
+                <input type="text" className="at-input" value={postMemberForm.username} onChange={(e) => setPostMemberForm({...postMemberForm, username: e.target.value})} />
+              </div>
+              <div className="at-form-group">
+                <label className="at-label">초대 코드</label>
+                <input type="text" className="at-input" value={postMemberForm.inviteCode} onChange={(e) => setPostMemberForm({...postMemberForm, inviteCode: e.target.value})} />
+              </div>
+            </div>
+          )}
+
+          {/* PUT_MEMBER_ACCEPT 폼 */}
+          {activeTab === 'PUT_MEMBER_ACCEPT' && (
+            <div>
+              <div className="at-form-group">
+                <label className="at-label">수락할 Username</label>
+                <input type="text" className="at-input" value={acceptUsername} onChange={(e) => setAcceptUsername(e.target.value)} />
+              </div>
             </div>
           )}
 

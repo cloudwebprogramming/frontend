@@ -92,9 +92,13 @@ export default function ProjectTaskManagement() {
             onChange={(e) => setSelectedProjectId(e.target.value)}
             className="ptm-select"
           >
-            {projects.map(p => (
-              <option key={p.id} value={p.id}>[{p.subject}] {p.title}</option>
-            ))}
+            {projects.length === 0 ? (
+              <option value="">(프로젝트 없음)</option>
+            ) : (
+              projects.map(p => (
+                <option key={p.id} value={p.id}>[{p.subject}] {p.title}</option>
+              ))
+            )}
           </select>
         </div>
 
