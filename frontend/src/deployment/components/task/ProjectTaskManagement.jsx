@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getProjects, getProjectMembers, getTasksFiltered, updateTaskAssignee } from '../../api/taskApi';
+import AssigneeEditModal from './AssigneeEditModal';
 import './ProjectTaskManagement.css';
 
 export default function ProjectTaskManagement() {
@@ -10,6 +11,10 @@ export default function ProjectTaskManagement() {
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // 담당자 수정 모달 상태
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
 
   // 1. 프로젝트 목록 로드
   useEffect(() => {
@@ -53,14 +58,15 @@ export default function ProjectTaskManagement() {
     }
   }, [selectedProjectId, selectedAssignee]);
 
-  const handleAssigneeUpdate = async (taskId, currentAssignee) => {
-    const newAssignee = prompt('새로운 담당자 이름을 입력하세요 (비워두면 지정 취소):', currentAssignee || '');
-    if (newAssignee === null) return; // 취소 버튼
+  const handleOpenEditModal = (task) => {
+    setEditingTask(task);
+    setIsEditModalOpen(true);
+  };
 
+  const handleAssigneeUpdate = async (taskId, newAssignee) => {
     try {
       const res = await updateTaskAssignee(taskId, newAssignee);
       if (res.status === 200) {
-        alert('담당자가 수정되었습니다.');
         // 목록 새로고침
         const taskRes = await getTasksFiltered(selectedProjectId, { assignee: selectedAssignee });
         if (taskRes.status === 200) setTasks(taskRes.data);
@@ -138,7 +144,7 @@ export default function ProjectTaskManagement() {
                   <td>
                     <button 
                       className="ptm-btn-edit"
-                      onClick={() => handleAssigneeUpdate(t.taskId, t.assignee)}
+                      onClick={() => handleOpenEditModal(t)}
                     >
                       담당자 변경
                     </button>
@@ -149,6 +155,15 @@ export default function ProjectTaskManagement() {
           </table>
         )}
       </div>
+
+      {/* 담당자 수정 모달 추가 */}
+      <AssigneeEditModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        task={editingTask}
+        members={members}
+        onUpdate={handleAssigneeUpdate}
+      />
     </div>
   );
 }
