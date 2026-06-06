@@ -4,7 +4,7 @@ import ApiTesterPanel from './ApiTesterPanel';
 import ProjectTaskManagement from './ProjectTaskManagement';
 import './TaskRegistrationDashboard.css';
 
-export default function TaskRegistrationDashboard() {
+export default function TaskRegistrationDashboard({ project }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [createdTasks, setCreatedTasks] = useState([]);
 
@@ -12,15 +12,14 @@ export default function TaskRegistrationDashboard() {
     setCreatedTasks((prev) => [...prev, newTask]);
   };
 
+  if (!project) return <div>프로젝트 정보를 찾을 수 없습니다.</div>;
+
   return (
     <div className="trd-dashboard-container">
-      <header className="trd-dashboard-header">
-        <h2 className="trd-dashboard-title">할일 등록 대시보드</h2>
-      </header>
-
       <section className="trd-trigger-section">
         <div className="trd-trigger-card">
           <h3 className="trd-card-title">할 일 등록</h3>
+          <p className="trd-card-desc">새로운 업무를 등록하여 팀원들과 공유하세요.</p>
           <button
             type="button"
             className="trd-btn-primary"
@@ -32,7 +31,7 @@ export default function TaskRegistrationDashboard() {
 
         {createdTasks.length > 0 && (
           <div className="trd-task-list-card">
-            <h4 className="trd-list-title">등록 완료된 할 일 목록</h4>
+            <h4 className="trd-list-title">방금 등록한 할 일</h4>
             <ul className="trd-task-list">
               {createdTasks.map((t, idx) => (
                 <li key={idx} className="trd-task-item">
@@ -49,7 +48,7 @@ export default function TaskRegistrationDashboard() {
       </section>
 
       {/* 신규 기능: 프로젝트별 담당자 관리 및 필터링 섹션 */}
-      <ProjectTaskManagement />
+      <ProjectTaskManagement initialProjectId={project.id} />
 
       {/* API 실시간 연동 테스트 보드 */}
       <ApiTesterPanel />
@@ -58,7 +57,7 @@ export default function TaskRegistrationDashboard() {
       <TaskFormModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        initialProjectId={1}
+        initialProjectId={project.id}
         onTaskCreated={handleTaskCreated}
       />
     </div>

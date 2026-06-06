@@ -3,9 +3,9 @@ import { getProjects, getProjectMembers, getTasksFiltered, updateTaskAssignee } 
 import AssigneeEditModal from './AssigneeEditModal';
 import './ProjectTaskManagement.css';
 
-export default function ProjectTaskManagement() {
+export default function ProjectTaskManagement({ initialProjectId }) {
   const [projects, setProjects] = useState([]);
-  const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [selectedProjectId, setSelectedProjectId] = useState(initialProjectId || '');
   const [members, setMembers] = useState([]);
   const [selectedAssignee, setSelectedAssignee] = useState('');
   const [tasks, setTasks] = useState([]);
@@ -23,7 +23,8 @@ export default function ProjectTaskManagement() {
         const res = await getProjects();
         if (res.status === 200) {
           setProjects(res.data);
-          if (res.data.length > 0) {
+          // initialProjectId가 없으면 첫 번째 프로젝트 선택
+          if (!selectedProjectId && res.data.length > 0) {
             setSelectedProjectId(res.data[0].id);
           }
         }
