@@ -1,108 +1,256 @@
+/* 전체 컨테이너 및 타이틀 */
 .pl-container {
-  padding: 20px;
+  padding: 32px 24px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
 .pl-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 24px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 28px;
+  letter-spacing: -0.02em;
 }
 
+/* 그리드 레이아웃 */
 .pl-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
 }
 
+.pl-subject-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* 프로젝트 카드 디자인 */
 .pl-card {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  min-height: 240px; /* 제목 중앙 배치 및 여백 밸런스를 위해 높이 소폭 조정 */
 }
 
+/* 카드 마우스 호버 효과 */
 .pl-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   border-color: #3b82f6;
 }
 
-.pl-subject {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #6366f1;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-  display: block;
+/* ★ 카드 헤더 구역 정돈 (양 끝 정렬) */
+.pl-card-header {
+  display: flex;
+  justify-content: space-between; /* 과목명은 왼쪽 끝, 버튼은 오른쪽 끝으로 정렬 */
+  align-items: center; /* 세로 기준 일직선 정렬 */
+  width: 100%;
+  margin-bottom: 12px;
 }
 
-.pl-project-title {
-  font-size: 1.25rem;
+/* 왼쪽 과목명 구역 (원래 왼쪽 정렬 유지) */
+.pl-header-main {
+  flex: 1;
+  text-align: left;
+}
+
+.pl-subject {
+  font-size: 0.85rem;
   font-weight: 700;
-  color: #111827;
-  margin-bottom: 12px;
+  color: #4f46e5;
+  padding: 10px 0px;
+  border-radius: 6px;
+  display: inline-block;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* ★ 오른쪽 수정/삭제 버튼 세트 (오른쪽 끝 배치) */
+.pl-card-actions {
+  display: flex;
+  gap: 6px;
+  opacity: 0; /* 평소엔 숨김 */
+  transition: opacity 0.2s ease;
+  margin-left: auto; /* 명확하게 오른쪽 끝으로 밀어 붙이기 */
+}
+
+/* 카드 호버 시 액션 버튼 노출 */
+.pl-card:hover .pl-card-actions {
+  opacity: 1;
+}
+
+.pl-action-btn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pl-action-btn.edit {
+  color: #3b82f6;
+}
+.pl-action-btn.edit:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+}
+
+.pl-action-btn.delete {
+  color: #ef4444;
+}
+.pl-action-btn.delete:hover {
+  background: #fef2f2;
+  border-color: #ef4444;
+}
+
+/* ★ 프로젝트 제목 구역 (중앙 정렬 완벽 적용) */
+/* 변경 후 */
+.pl-project-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.4;
+  text-align: left;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+/* 카드 본문 (설명문) */
+.pl-card-body {
+  margin-bottom: 20px;
+  flex-grow: 1;
 }
 
 .pl-description {
   font-size: 0.875rem;
-  color: #4b5563;
-  line-height: 1.5;
-  margin-bottom: 16px;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
+/* 카드 푸터 구역 */
 .pl-card-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid #f3f4f6;
-  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 14px;
+  margin-top: auto;
 }
 
 .pl-invite-code {
   font-size: 0.75rem;
-  color: #64748b;
+  font-weight: 500;
+  color: #94a3b8;
+  background: #f8fafc;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px dashed #cbd5e1;
   font-family: monospace;
 }
 
 .pl-enter-btn {
   background: #3b82f6;
-  color: white;
+  color: #ffffff;
   border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 .pl-enter-btn:hover {
   background: #2563eb;
 }
 
-.pl-empty {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 40px;
-  background: #f9fafb;
-  border: 2px dashed #e5e7eb;
-  border-radius: 12px;
-  color: #6b7280;
+/* [수정 모드] 인풋 폼 스타일 정돈 */
+.pl-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
 }
 
-.pl-loading, .pl-error {
+.pl-edit-input, .pl-edit-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.pl-edit-input:focus, .pl-edit-textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.pl-edit-textarea {
+  min-height: 90px;
+  resize: none;
+}
+
+.pl-edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.pl-btn-save, .pl-btn-cancel {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pl-btn-save {
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+}
+.pl-btn-save:hover { background: #2563eb; }
+
+.pl-btn-cancel {
+  background: #ffffff;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+.pl-btn-cancel:hover { background: #f8fafc; }
+
+/* 예외 상황 (로딩, 에러, 빈 목록) */
+.pl-empty, .pl-loading, .pl-error {
+  grid-column: 1 / -1;
   text-align: center;
-  padding: 40px;
-  color: #6b7280;
+  padding: 60px 20px;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+.pl-empty {
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
 }
