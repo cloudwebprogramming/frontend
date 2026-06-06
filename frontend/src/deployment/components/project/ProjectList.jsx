@@ -50,7 +50,7 @@ export default function ProjectList({ onSelectProject }) {
               </div>
               <div className="pl-card-footer">
                 <span className="pl-invite-code">코드: {project.inviteCode}</span>
-                <button className="pl-enter-btn">진입하기</button>
+                <button className="pl-enter-btn">상세보기</button>
               </div>
             </div>
           ))
