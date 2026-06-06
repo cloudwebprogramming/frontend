@@ -74,7 +74,7 @@
   margin: 0;
 }
 
-/* ★ 오른쪽 수정/삭제 버튼 세트 (오른쪽 끝 배치) */
+/* 오른쪽 수정/삭제 버튼 세트 (오른쪽 끝 배치) */
 .pl-card-actions {
   display: flex;
   gap: 6px;
