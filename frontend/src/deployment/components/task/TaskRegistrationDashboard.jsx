@@ -1,24 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TaskFormModal from './TaskFormModal';
 import ApiTesterPanel from './ApiTesterPanel';
 import ProjectTaskManagement from './ProjectTaskManagement';
+import { getProjects } from '../../api/taskApi'; // 프로젝트 정보를 다시 가져오기 위해 추가
 import './TaskRegistrationDashboard.css';
 
-export default function TaskRegistrationDashboard({ project }) {
+export default function TaskRegistrationDashboard({ projectId }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [createdTasks, setCreatedTasks] = useState([]);
+  const [project, setProject] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 1. projectId가 바뀔 때마다 해당 프로젝트 정보를 백엔드에서 다시 가져옴 (F5 대응)
+  useEffect(() => {
+    const fetchProjectDetail = async () => {
+      if (!projectId) return;
+      setIsLoading(true);
+      try {
+        const res = await getProjects(); // 전체 목록에서 찾거나, 단일 조회 API가 있다면 그것을 사용
+        if (res.status === 200) {
+          const found = res.data.find(p => String(p.id) === String(projectId));
+          setProject(found);
+        }
+      } catch (err) {
+        console.error('프로젝트 정보를 불러오지 못했습니다.', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProjectDetail();
+  }, [projectId]);
 
   const handleTaskCreated = (newTask) => {
     setCreatedTasks((prev) => [...prev, newTask]);
   };
 
-  if (!project) return <div>프로젝트 정보를 찾을 수 없습니다.</div>;
+  if (isLoading) return <div style={{ padding: '24px' }}>로딩 중...</div>;
+  if (!project) return <div style={{ padding: '24px' }}>프로젝트 정보를 찾을 수 없습니다.</div>;
 
   return (
     <div className="trd-dashboard-container">
       <section className="trd-trigger-section">
         <div className="trd-trigger-card">
-          <h3 className="trd-card-title">할 일 등록</h3>
+          <h3 className="trd-card-title">[{project.title}] 할 일 등록</h3>
           <p className="trd-card-desc">새로운 업무를 등록하여 팀원들과 공유하세요.</p>
           <button
             type="button"
