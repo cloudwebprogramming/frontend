@@ -54,6 +54,46 @@ export async function createProject(projectData) {
 }
 
 /**
+ * 프로젝트 수정 API
+ * @param {number} projectId
+ * @param {object} projectData { title, subject, description }
+ */
+export async function updateProject(projectId, projectData) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(projectData),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || '프로젝트 수정 중 에러가 발생했습니다.');
+  }
+
+  const data = await response.json();
+  return { status: response.status, data };
+}
+
+/**
+ * 프로젝트 삭제 API
+ * @param {number} projectId
+ */
+export async function deleteProject(projectId) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || '프로젝트 삭제 중 에러가 발생했습니다.');
+  }
+
+  return { status: response.status };
+}
+
+/**
  * 초대 코드로 프로젝트 참여 API
  * @param {string} inviteCode 초대 코드
  * @param {string} username 참여할 사용자 아이디
