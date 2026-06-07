@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getProjects } from '../../api/taskApi';
+import { getProjects, getProjectProgress } from '../../api/taskApi';
 import { deleteProject, updateProject } from '../../api/projectApi';
 import './ProjectList.css';
 
@@ -16,7 +16,23 @@ export default function ProjectList({ onSelectProject }) {
     try {
       const res = await getProjects();
       if (res.status === 200) {
-        setProjects(res.data);
+        // 각 프로젝트의 진행률을 병렬로 가져와서 합칩니다.
+        const projectsWithProgress = await Promise.all(
+          res.data.map(async (project) => {
+            try {
+              const progRes = await getProjectProgress(project.id);
+              return { 
+                ...project, 
+                progress: progRes.data.progress || 0,
+                totalTasks: progRes.data.totalTasks || 0,
+                completedTasks: progRes.data.completedTasks || 0
+              };
+            } catch {
+              return { ...project, progress: 0, totalTasks: 0, completedTasks: 0 };
+            }
+          })
+        );
+        setProjects(projectsWithProgress);
       }
     } catch (err) {
       console.error(err);
@@ -27,7 +43,7 @@ export default function ProjectList({ onSelectProject }) {
   };
 
   useEffect(() => {
-    fetchProjects(); // eslint-disable-line react-hooks/set-state-in-effect
+    fetchProjects();
   }, []);
 
   const handleDelete = async (e, id) => {
@@ -124,7 +140,6 @@ export default function ProjectList({ onSelectProject }) {
                 <>
                   <div className="pl-card-header">
                     <div className="pl-header-main">
-                      {/* ✅ subject와 수정/삭제 버튼을 같은 줄에 배치 */}
                       <div className="pl-subject-row">
                         <span className="pl-subject">{project.subject}</span>
                         <div className="pl-card-actions">
@@ -137,6 +152,19 @@ export default function ProjectList({ onSelectProject }) {
                   </div>
                   <div className="pl-card-body">
                     <p className="pl-description">{project.description || '설명이 없습니다.'}</p>
+                    
+                    <div className="pl-progress-container">
+                      <div className="pl-progress-label">
+                        <span>진행률</span>
+                        <span>{project.progress}% ({project.completedTasks}/{project.totalTasks})</span>
+                      </div>
+                      <div className="pl-progress-bar">
+                        <div 
+                          className="pl-progress-fill" 
+                          style={{ width: `${project.progress}%` }}
+                        ></div>
+                      </div>
+                    </div>
                   </div>
                   <div className="pl-card-footer">
                     <span className="pl-invite-code">코드: {project.inviteCode}</span>
