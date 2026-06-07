@@ -5,6 +5,7 @@ import ProjectEntryButton from './deployment/components/project/ProjectEntryButt
 import ProjectList from './deployment/components/project/ProjectList'
 import SignUp from './deployment/components/auth/SignUp'
 import Login from './deployment/components/auth/Login'
+import MyPage from './deployment/components/mypage/MyPage'
 import { isAuthenticated } from './deployment/api/authApi.js'
 
 // Protected route component
@@ -84,6 +85,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ProjectDetailView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mypage"
+          element={
+            <ProtectedRoute>
+              <MyPage />
             </ProtectedRoute>
           }
         />
