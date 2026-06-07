@@ -216,7 +216,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 100%;
+  width: 90%;
 }
 
 .pl-edit-input, .pl-edit-textarea {
@@ -281,6 +281,5 @@
 }
 
 .pl-empty {
-  background: #f8fafc;
   border: 2px dashed #cbd5e1;
 }
