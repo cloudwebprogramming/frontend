@@ -3,13 +3,13 @@ import { getProjects, getProjectProgress } from '../../api/taskApi';
 import { deleteProject, updateProject } from '../../api/projectApi';
 import './ProjectList.css';
 
-export default function ProjectList({ onSelectProject }) {
+export default function ProjectList({ onSelectProject, refreshKey = 0 }) {
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const [editingProjectId, setEditingProjectId] = useState(null);
-  const [editForm, setEditForm] = useState({ title: '', subject: '', description: '' });
+  const [editForm, setEditForm] = useState({ title: '', subject: '', description: '', memberCount: '', deadline: '' });
 
   const fetchProjects = async () => {
     setIsLoading(true);
@@ -44,7 +44,7 @@ export default function ProjectList({ onSelectProject }) {
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [refreshKey]);
 
   const handleDelete = async (e, id) => {
     e.stopPropagation();
@@ -66,7 +66,9 @@ export default function ProjectList({ onSelectProject }) {
     setEditForm({
       title: project.title ?? '',
       subject: project.subject ?? '',
-      description: project.description ?? ''
+      description: project.description ?? '',
+      memberCount: project.memberCount ?? '',
+      deadline: project.deadline ?? ''
     });
   };
 
@@ -79,7 +81,12 @@ export default function ProjectList({ onSelectProject }) {
     }
 
     try {
-      const res = await updateProject(editingProjectId, editForm);
+      const payload = {
+        ...editForm,
+        memberCount: editForm.memberCount ? Number(editForm.memberCount) : null,
+        deadline: editForm.deadline || null
+      };
+      const res = await updateProject(editingProjectId, payload);
       if (res.status === 200) {
         setEditingProjectId(null);
         fetchProjects();
@@ -101,7 +108,12 @@ export default function ProjectList({ onSelectProject }) {
 
   return (
     <div className="pl-container">
-      <h2 className="pl-title">내 프로젝트 목록</h2>
+      <div className="pl-section-header">
+        <div>
+          <h2 className="pl-title">내 프로젝트</h2>
+          <p className="pl-subtitle">참여 중인 팀프로젝트와 진행률을 확인하세요.</p>
+        </div>
+      </div>
       <div className="pl-grid">
         {projects.length === 0 ? (
           <p className="pl-empty">참여 중인 프로젝트가 없습니다. 새 프로젝트를 생성하거나 참여해보세요!</p>
@@ -131,6 +143,22 @@ export default function ProjectList({ onSelectProject }) {
                     onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                     placeholder="설명"
                   />
+                  <div className="pl-edit-row">
+                    <input
+                      className="pl-edit-input"
+                      type="number"
+                      min="1"
+                      value={editForm.memberCount}
+                      onChange={(e) => setEditForm({ ...editForm, memberCount: e.target.value })}
+                      placeholder="멤버 인원"
+                    />
+                    <input
+                      className="pl-edit-input"
+                      type="date"
+                      value={editForm.deadline}
+                      onChange={(e) => setEditForm({ ...editForm, deadline: e.target.value })}
+                    />
+                  </div>
                   <div className="pl-edit-actions">
                     <button type="button" className="pl-btn-save" onClick={handleUpdate}>저장</button>
                     <button type="button" className="pl-btn-cancel" onClick={() => setEditingProjectId(null)}>취소</button>
@@ -152,6 +180,10 @@ export default function ProjectList({ onSelectProject }) {
                   </div>
                   <div className="pl-card-body">
                     <p className="pl-description">{project.description || '설명이 없습니다.'}</p>
+                    <div className="pl-meta-row">
+                      <span>멤버 {project.members?.length || 0}{project.memberCount ? `/${project.memberCount}` : ''}명</span>
+                      <span>{project.deadline ? `마감 ${project.deadline}` : '마감일 미정'}</span>
+                    </div>
                     
                     <div className="pl-progress-container">
                       <div className="pl-progress-label">

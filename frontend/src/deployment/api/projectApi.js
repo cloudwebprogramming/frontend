@@ -28,6 +28,8 @@ export async function createProject(projectData) {
             title: projectData.title,
             subject: projectData.subject || '',
             description: projectData.description || '',
+            memberCount: projectData.memberCount || null,
+            deadline: projectData.deadline || null,
             inviteCode: makeMockInviteCode(),
             members: [],
           },

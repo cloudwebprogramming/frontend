@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { createProject, joinProjectByCode } from '../../api/projectApi';
+import { getUser } from '../../api/authApi';
 import './ProjectModal.css';
 
 /**
@@ -19,16 +20,26 @@ export default function ProjectModal(props) {
     onProjectJoined = () => {},
   } = props;
 
+  const currentUser = getUser();
+  const currentUsername = currentUser?.username || currentUser?.email || currentUser?.name || '홍길동';
+
   const [tab, setTab] = useState('create'); // 'create' | 'join'
 
   // 생성 폼 상태
-  const initialCreateForm = { title: '', subject: '', description: '', creatorUsername: '' };
+  const initialCreateForm = {
+    title: '',
+    subject: '',
+    description: '',
+    memberCount: '',
+    deadline: '',
+    creatorUsername: currentUsername
+  };
   const [createForm, setCreateForm] = useState(initialCreateForm);
   const [createdInviteCode, setCreatedInviteCode] = useState('');
   const [copied, setCopied] = useState(false);
 
   // 참여 폼 상태
-  const initialJoinForm = { inviteCode: '', username: '' };
+  const initialJoinForm = { inviteCode: '', username: currentUsername };
   const [joinForm, setJoinForm] = useState(initialJoinForm);
   const [joinedProject, setJoinedProject] = useState(null);
 
@@ -83,9 +94,15 @@ export default function ProjectModal(props) {
         subject: createForm.subject.trim(),
         description: createForm.description.trim(),
       };
-      // 생성자 아이디는 선택값. 입력 시에만 전송(존재하는 사용자여야 함)
-      if (createForm.creatorUsername.trim()) {
-        payload.creatorUsername = createForm.creatorUsername.trim();
+      if (createForm.memberCount) {
+        payload.memberCount = Number(createForm.memberCount);
+      }
+      if (createForm.deadline) {
+        payload.deadline = createForm.deadline;
+      }
+      const creatorUsername = createForm.creatorUsername.trim() || currentUsername;
+      if (creatorUsername) {
+        payload.creatorUsername = creatorUsername;
       }
 
       const res = await createProject(payload);
@@ -226,8 +243,36 @@ export default function ProjectModal(props) {
                 />
               </div>
 
+              <div className="pf-row">
+                <div className="pf-form-group">
+                  <label className="pf-label" htmlFor="pf-member-count">멤버 인원 (선택)</label>
+                  <input
+                    type="number"
+                    id="pf-member-count"
+                    name="memberCount"
+                    className="pf-input"
+                    value={createForm.memberCount}
+                    onChange={handleCreateChange}
+                    min="1"
+                    placeholder="예: 4"
+                  />
+                </div>
+
+                <div className="pf-form-group">
+                  <label className="pf-label" htmlFor="pf-deadline">프로젝트 마감일 (선택)</label>
+                  <input
+                    type="date"
+                    id="pf-deadline"
+                    name="deadline"
+                    className="pf-input"
+                    value={createForm.deadline}
+                    onChange={handleCreateChange}
+                  />
+                </div>
+              </div>
+
               <div className="pf-form-group">
-                <label className="pf-label" htmlFor="pf-creator">생성자 아이디 (선택)</label>
+                <label className="pf-label" htmlFor="pf-creator">생성자 아이디</label>
                 <input
                   type="text"
                   id="pf-creator"
@@ -235,7 +280,7 @@ export default function ProjectModal(props) {
                   className="pf-input"
                   value={createForm.creatorUsername}
                   onChange={handleCreateChange}
-                  placeholder="입력 시 생성자가 멤버로 자동 등록됩니다"
+                  placeholder="프로젝트 멤버로 자동 등록됩니다"
                 />
               </div>
 

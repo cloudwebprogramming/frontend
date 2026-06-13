@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { createTask, getProjects, getProjectMembers } from '../../api/taskApi';
+import { createTask } from '../../api/taskApi';
 import CategoryManageSubForm from './CategoryManageSubForm';
 import './TaskFormModal.css';
 
@@ -13,10 +13,12 @@ export default function TaskFormModal(props) {
     onTaskCreated = () => { }
   } = props;
 
-  // 프로젝트 및 멤버 정보 동적 연동 상태
-  const [projects, setProjects] = useState([]);
-  const [members, setMembers] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState(initialProjectId);
+  const assigneeOptions = [
+    { label: '담당자 미지정', value: '' },
+    { label: '전체', value: '전체' },
+    { label: '홍길동', value: '홍길동' },
+  ];
 
   // 카테고리 목록 동적 관리 상태 (기본값 설정 및 로컬스토리지 영속성 보조)
   const [categories, setCategories] = useState(() => {
@@ -40,49 +42,11 @@ export default function TaskFormModal(props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccessMsg, setSubmitSuccessMsg] = useState('');
 
-  // 1. 컴포넌트 오픈 시 프로젝트 목록 동적 로드
   useEffect(() => {
     if (isOpen) {
-      const fetchProjects = async () => {
-        try {
-          const res = await getProjects();
-          if (res?.status === 200) {
-            setProjects(res?.data || []);
-            // initialProjectId 설정이 있고, 해당 프로젝트가 목록에 존재하면 세팅
-            const targetId = Number(initialProjectId);
-            const exists = res?.data?.some(p => Number(p.id) === targetId);
-            setSelectedProjectId(exists ? targetId : (res?.data[0]?.id || 1));
-          }
-        } catch (err) {
-          console.error('프로젝트 목록 로딩 실패:', err);
-        }
-      };
-      fetchProjects();
+      setSelectedProjectId(initialProjectId);
     }
   }, [isOpen, initialProjectId]);
-
-  // 2. 프로젝트 변경 시 해당 프로젝트 멤버 목록 실시간 로드
-  useEffect(() => {
-    if (isOpen && selectedProjectId) {
-      const fetchMembers = async () => {
-        try {
-          const res = await getProjectMembers(selectedProjectId);
-          if (res?.status === 200) {
-            const memberList = res?.data || [];
-            setMembers(memberList);
-            // 폼 데이터의 담당자 필드 초기화 또는 첫 번째 팀원으로 자동 지정
-            setFormData(prev => ({
-              ...prev,
-              assignee: memberList[0] || ''
-            }));
-          }
-        } catch (err) {
-          console.error('멤버 목록 로딩 실패:', err);
-        }
-      };
-      fetchMembers();
-    }
-  }, [isOpen, selectedProjectId]);
 
   // 3. 카테고리 목록 변경 시 로컬 스토리지에 영속 보관 및 기본 카테고리 바인딩
   useEffect(() => {
@@ -111,11 +75,6 @@ export default function TaskFormModal(props) {
         return next;
       });
     }
-  };
-
-  const handleProjectChange = (e) => {
-    const val = Number(e.target.value);
-    setSelectedProjectId(val);
   };
 
   const validateForm = () => {
@@ -200,28 +159,6 @@ export default function TaskFormModal(props) {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* [2라운드 요구] 프로젝트 선택 드롭다운 */}
-          <div className="tf-form-group">
-            <label className="tf-label" htmlFor="tf-project">대상 프로젝트</label>
-            <select
-              id="tf-project"
-              className="tf-select"
-              value={selectedProjectId}
-              onChange={handleProjectChange}
-            >
-              {projects.length === 0 ? (
-                <option value="">(프로젝트가 없습니다. 먼저 생성해주세요)</option>
-              ) : (
-                projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    [{p.subject}] {p.title}
-                  </option>
-                ))
-              )}
-            </select>
-            {errors.project && <span className="tf-error-msg">{errors.project}</span>}
-          </div>
-
           <div className="tf-form-group">
             <label className="tf-label" htmlFor="tf-title">할 일 제목</label>
             <input
@@ -259,13 +196,9 @@ export default function TaskFormModal(props) {
                 value={formData.assignee}
                 onChange={handleChange}
               >
-                {members.length === 0 ? (
-                  <option value="">(배정 대상 팀원 없음)</option>
-                ) : (
-                  members.map((m) => (
-                    <option key={m} value={m}>{m}</option>
-                  ))
-                )}
+                {assigneeOptions.map((option) => (
+                  <option key={option.label} value={option.value}>{option.label}</option>
+                ))}
               </select>
             </div>
 

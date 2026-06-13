@@ -49,6 +49,10 @@ export async function createTask(projectId, taskData) {
             priority: taskData.priority || '보통',
             dueDate: taskData.dueDate,
             dday: calculateMockDDay(taskData.dueDate),
+            description: taskData.description || '',
+            detailNotes: taskData.detailNotes || '',
+            checklist: taskData.checklist || [],
+            status: taskData.status || '예정',
             completed: false,
           },
         };
@@ -76,6 +80,44 @@ export async function createTask(projectId, taskData) {
     status: response.status,
     data: data,
   };
+}
+
+/**
+ * 할 일 상태 변경 API
+ * @param {number|string} taskId 할 일 ID
+ * @param {string} status 예정 | 진행 | 완료
+ */
+export async function updateTaskStatus(taskId, status) {
+  if (USE_MOCK) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          status: 200,
+          data: {
+            taskId: Number(taskId),
+            status,
+            completed: status === '완료'
+          }
+        });
+      }, 200);
+    });
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/tasks/${taskId}/status`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ status }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || '할 일 상태를 변경하지 못했습니다.');
+  }
+
+  const data = await response.json();
+  return { status: 200, data };
 }
 
 /**
@@ -117,6 +159,44 @@ export async function updateTaskAssignee(taskId, assignee) {
     status: 200,
     data: data,
   };
+}
+
+/**
+ * 할 일 상세 작업 공간 저장 API
+ * @param {number|string} taskId 할 일 ID
+ * @param {object} detailData { detailNotes, checklist }
+ */
+export async function updateTaskDetails(taskId, detailData) {
+  if (USE_MOCK) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          status: 200,
+          data: {
+            taskId: Number(taskId),
+            detailNotes: detailData.detailNotes || '',
+            checklist: detailData.checklist || []
+          }
+        });
+      }, 200);
+    });
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/tasks/${taskId}/details`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(detailData),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || '할 일 상세 내용을 저장하지 못했습니다.');
+  }
+
+  const data = await response.json();
+  return { status: 200, data };
 }
 
 /**

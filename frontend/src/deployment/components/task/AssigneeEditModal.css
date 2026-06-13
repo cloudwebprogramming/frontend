@@ -6,7 +6,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(15, 23, 42, 0.38);
   backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
@@ -15,15 +15,15 @@
 }
 
 .aem-container {
-  background: rgba(30, 41, 59, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
   width: 100%;
   max-width: 400px;
   padding: 24px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
   font-family: 'Inter', sans-serif;
-  color: #f1f5f9;
+  color: #0f172a;
 }
 
 .aem-header {
@@ -36,25 +36,25 @@
 .aem-title {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #e2e8f0;
+  color: #0f172a;
   margin: 0;
 }
 
 .aem-close-btn {
   background: none;
   border: none;
-  color: #94a3b8;
+  color: #64748b;
   font-size: 1.5rem;
   cursor: pointer;
   transition: color 0.2s;
 }
 
 .aem-close-btn:hover {
-  color: #f1f5f9;
+  color: #0f172a;
 }
 
 .aem-task-info {
-  background: rgba(255, 255, 255, 0.05);
+  background: #f8fafc;
   padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 24px;
@@ -65,13 +65,13 @@
 
 .aem-task-label {
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: #64748b;
   font-weight: 600;
 }
 
 .aem-task-name {
   font-size: 0.9rem;
-  color: #f1f5f9;
+  color: #0f172a;
   font-weight: 500;
 }
 
@@ -82,7 +82,7 @@
 .aem-label {
   display: block;
   font-size: 0.85rem;
-  color: #a5b4fc;
+  color: #1d4ed8;
   margin-bottom: 8px;
   font-weight: 600;
 }
@@ -90,10 +90,10 @@
 .aem-select {
   width: 100%;
   padding: 12px;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
   border-radius: 8px;
-  color: #f1f5f9;
+  color: #0f172a;
   font-size: 0.95rem;
   cursor: pointer;
   outline: none;
@@ -101,7 +101,7 @@
 }
 
 .aem-select:focus {
-  border-color: #6366f1;
+  border-color: #2563eb;
 }
 
 .aem-help-text {
@@ -126,18 +126,18 @@
 }
 
 .aem-btn-cancel {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #94a3b8;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
 }
 
 .aem-btn-cancel:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #f1f5f9;
+  background: #f8fafc;
+  color: #0f172a;
 }
 
 .aem-btn-submit {
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  background: #2563eb;
   border: none;
   color: white;
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
